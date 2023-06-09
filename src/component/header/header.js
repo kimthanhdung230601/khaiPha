@@ -10,9 +10,9 @@ import Col from "react-bootstrap/Col";
 import "./header.css";
 
 const Header = () => {
-  const [name, setName] = useState();
+  const [name, setName] = useState("");
   const handleFind = () => {
-    if (!name) {
+    if (name != "") {
       var requestOptions = {
         method: "GET",
         redirect: "follow",
@@ -22,9 +22,8 @@ const Header = () => {
         .then((response) => response.text())
         .then((result) => console.log(result))
         .catch((error) => console.log("error", error));
-    }
-    else {
-      alert("vui lòng nhập tên bệnh nhân")
+    } else {
+      alert("vui lòng nhập tên bệnh nhân");
     }
   };
   return (

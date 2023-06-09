@@ -1,4 +1,4 @@
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Col, Row, Table } from "react-bootstrap";
 import { useEffect, useState } from "react";
@@ -7,10 +7,14 @@ import Button from "react-bootstrap/Button";
 // import Nav from "../../../component/User/Nav";
 
 function Account() {
+  //lưu kết quả chuẩn đoán
+  const [result, setResult] = useState();
+  const [item, setItem] = useState([]);
+  const [submit, setSubmit] = useState(false);
   const [values, setValues] = useState({
     name: "",
     age: "",
-    gende: "",
+    gender: "",
     polyuria: "",
     polydipsia: "",
     wLoss: "",
@@ -26,48 +30,59 @@ function Account() {
     alopecia: "",
     obesity: "",
   });
+
   //lưu trữ thông tin bệnh nhân điền
   const handleRadioChange = (event) => {
     const { name, value } = event.target;
     setValues((prevValues) => ({ ...prevValues, [name]: value }));
   };
-  //lưu kết quả chuẩn đoán
-  const [result, setResult] = useState();
+
   const handleCheck = () => {
-    var formdata = new FormData();
-    formdata.append(values);
-    // console.log(values);
     var requestOptions = {
       method: "POST",
-      body: "formdata",
-      redirect: "follow",
+      body: JSON.stringify(values),
+      headers: {
+        "Content-Type": "application/json",
+      },
     };
     fetch("http://localhost:8080/predict", requestOptions)
-      .then((response) => response.JSON())
+      .then((response) => response.json())
       .then((result) => {
-        console.log(result);
-        setResult(result);
+        const res = result.response;
+        setResult(res);
+        setSubmit(true);
       })
       .catch((error) => console.log("error", error));
   };
 
-
-  //fetch API lịch sử kiểm tra
-  const [item, setItem] = useState({})
-  const historyList =()=>{
+  const handleFind = (e) => {
     var requestOptions = {
       method: "GET",
       redirect: "follow",
     };
-    fetch("http://localhost:8080/predict", requestOptions)
-      .then((response) => response.JSON())
+
+    fetch(`http://localhost:8080/GetPatient/${e.target.value}`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => setItem(result))
+      .catch((error) => console.log("error", error));
+  };
+
+  //fetch API lịch sử kiểm tra
+
+  useEffect(() => {
+    if (submit) setSubmit(false);
+    var requestOptions = {
+      method: "GET",
+    };
+    fetch("http://localhost:8080/GetPatient", requestOptions)
+      .then((response) => response.json())
       .then((result) => {
         console.log(result);
         setItem(result);
       })
       .catch((error) => console.log("error", error));
-  };
-  
+  }, [submit]);
+
   return (
     <div className="wrapper">
       <div className="container-wrapper">
@@ -86,7 +101,7 @@ function Account() {
                 className="item-input"
                 // value={value}
                 name="name"
-                // checked={values.gende === "Male"}
+                // checked={values.gender === "Male"}
                 onChange={handleRadioChange}
               />
             </div>
@@ -98,7 +113,7 @@ function Account() {
                 className="item-input"
                 // value={value}
                 name="age"
-                // checked={values.gende === "Male"}
+                // checked={values.gender === "Male"}
                 onChange={handleRadioChange}
               />
             </div>
@@ -109,8 +124,8 @@ function Account() {
                   type="radio"
                   className="noti-input"
                   value="Male"
-                  name="gende"
-                  checked={values.gende === "Male"}
+                  name="gender"
+                  checked={values.gender === "Male"}
                   onChange={handleRadioChange}
                 />
                 Nam
@@ -119,9 +134,9 @@ function Account() {
                 <input
                   type="radio"
                   className="noti-input"
-                  name="gende"
+                  name="gender"
                   value="Female"
-                  checked={values.gende === "Female"}
+                  checked={values.gender === "Female"}
                   onChange={handleRadioChange}
                 />
                 Nữ
@@ -514,6 +529,25 @@ function Account() {
             />
           </label>
         </div>
+        <div className="heading-wrap">
+          <span className="noti-heading">Lịch sử kiểm tra</span>
+          <div className="input-wrap">
+            <input
+              type="text"
+              placeholder="Tìm kiếm"
+              id="input-search"
+              onChange={(e) => {
+                handleFind(e);
+              }}
+            />
+            <FontAwesomeIcon
+              className="icon-search"
+              icon={faMagnifyingGlass}
+              id="search"
+              onClick={handleFind}
+            />
+          </div>
+        </div>
 
         <div className="table-wrap">
           <Table className="table-custom">
@@ -543,29 +577,39 @@ function Account() {
               </tr>
             </thead>
             <tbody>
-              <tr className="table-line-item">
-                <td className="table-col">
-                  <div className="table-col-item"> 1</div>
-                </td>
-                <td className="table-col">
-                  <div className="table-col-item"> Đàm Xuân Ninh</div>
-                </td>
-                <td className="table-col">
-                  <div className="table-col-item"> 21</div>
-                </td>
-                <td className="table-col">
-                  <div className="table-col-item"> Nam</div>
-                </td>
-                <td className="table-col">
-                  <div className="table-col-item"> Bình thường</div>
-                </td>
-                <td className="table-col">
-                  <div className="table-col-item"> 20:14 22/02/2023</div>
-                </td>
-                <td className="table-col">
-                  <Button variant="outline-primary">Xem chi tiết</Button>{" "}
-                </td>
-              </tr>
+              {item.map((currentItem, index) => {
+                return (
+                  <tr className="table-line-item" key={index}>
+                    <td className="table-col">
+                      <div className="table-col-item"> {++index}</div>
+                    </td>
+                    <td className="table-col">
+                      <div className="table-col-item"> {currentItem.name}</div>
+                    </td>
+                    <td className="table-col">
+                      <div className="table-col-item"> {currentItem.age}</div>
+                    </td>
+                    <td className="table-col">
+                      <div className="table-col-item">
+                        {" "}
+                        {currentItem.gender}
+                      </div>
+                    </td>
+                    <td className="table-col">
+                      <div className="table-col-item result">
+                        {" "}
+                        {currentItem.classDT}
+                      </div>
+                    </td>
+                    <td className="table-col">
+                      <div className="table-col-item"> {currentItem.date}</div>
+                    </td>
+                    <td className="table-col">
+                      <Button variant="outline-primary">Xem chi tiết</Button>{" "}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
         </div>
