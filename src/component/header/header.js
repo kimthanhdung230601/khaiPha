@@ -8,8 +8,11 @@ import { faBell } from "@fortawesome/free-regular-svg-icons";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import "./header.css";
-
+import { useAuth } from "../../shared/AuthProvider";
+import { DownOutlined, SmileOutlined } from '@ant-design/icons';
+import { Dropdown, Space } from 'antd';
 const Header = () => {
+  const { user, logout } = useAuth();
   const [name, setName] = useState("");
   const handleFind = () => {
     if (name != "") {
@@ -26,6 +29,21 @@ const Header = () => {
       alert("vui lòng nhập tên bệnh nhân");
     }
   };
+  const logoutfunction = () => {
+    logout();
+    window.location.reload();
+  };
+
+  const items = [
+    {
+      key: '1',
+      label: (
+        <a target="_blank" rel="noopener noreferrer" onClick={logoutfunction}>
+          Đăng xuất
+        </a>
+      ),
+    }
+  ];
   return (
     <div className="header">
       <Row className="header-row">
@@ -62,15 +80,27 @@ const Header = () => {
             <div className="block-admin">
               <img
                 className="avatar-logo"
-                //   src={require("../../assets/avatar.jpg")}
+              //   src={require("../../assets/avatar.jpg")}
               />
               <div className="admin">
                 <p className="admin-name">{localStorage.getItem("username")}</p>
                 <div className="dropdown">
-                  <p className="sub-text">
-                    User{" "}
-                    <FontAwesomeIcon className="icon" icon={faChevronDown} />
-                  </p>
+                  <div className="sub-text">
+                    {user != null ?
+                    <Dropdown menu={{ items }}>
+                      <a onClick={(e) => e.preventDefault()}>
+                        <Space>
+                        { user.fullname}
+                          <DownOutlined />
+                        </Space>
+                      </a>
+                    </Dropdown> : <></>}
+                     {/* <Dropdown menu={{ items }} placement="bottom" arrow={{ pointAtCenter: true }}>
+                    <div>{user != null ? user.fullname : ""}</div>
+                  </Dropdown> */}
+
+                    {/* {user != null ? <FontAwesomeIcon className="icon" icon={faChevronDown} /> : <></>} */}
+                  </div>
                   <div></div>
                 </div>
               </div>

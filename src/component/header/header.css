@@ -19,7 +19,7 @@
   }
   
   .header {
-    position: fixed;
+    /* position: fixed; */
     width: 100%;
     margin-left: 3px;
     height: 81px;

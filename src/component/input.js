@@ -3,14 +3,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Col, Row, Table } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import "./account.css";
-import Button from "react-bootstrap/Button";
-// import Nav from "../../../component/User/Nav";
-
+import axios from "axios";
+import { DatePicker, Space, Button } from 'antd';
+import moment from "moment";
+import { toast } from "react-hot-toast";
+const { RangePicker } = DatePicker;
 function Account() {
   //lưu kết quả chuẩn đoán
   const [result, setResult] = useState();
   const [item, setItem] = useState([]);
   const [submit, setSubmit] = useState(false);
+  const [fromDate, setFromDate] = useState();
+  const [toDate, setToDate] = useState();
   const [values, setValues] = useState({
     name: "",
     age: "",
@@ -38,50 +42,103 @@ function Account() {
   };
 
   const handleCheck = () => {
-    var requestOptions = {
-      method: "POST",
-      body: JSON.stringify(values),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    fetch("http://localhost:8080/predict", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        const res = result.response;
+    // var requestOptions = {
+    //   method: "POST",
+    //   body: JSON.stringify(values),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // };
+    // fetch("http://localhost:8080/predict", requestOptions)
+    //   .then((response) => response.json())
+    //   .then((result) => {
+    //     const res = result.response;
+    //     setResult(res);
+    //     setSubmit(true);
+    //   })
+    //   .catch((error) => console.log("error", error));
+
+    //validate input
+    if (
+      values.name == "" || 
+      values.age == "" || 
+      values.alopecia == "" ||
+      values.delayedHealing == "" ||
+      values.gender == "" ||
+      values.genital == "" ||
+      values.itching == "" ||
+      values.muscleStiffness == "" ||
+      values.obesity == "" ||
+      values.partial == "" ||
+      values.polydipsia == "" ||
+      values.polyphagia == "" ||
+      values.polyuria == "" ||
+      values.visualBlurring == "" ||
+      values.wLoss == "" ||
+      values.weakness == ""
+    ) {
+      toast.error("Vui lòng điền đầy đủ thông tin");
+      return;
+    }
+
+
+    axios
+      .post(`api/predict`, values)
+      .then((response) => {
+        const res = response.data.response;
         setResult(res);
         setSubmit(true);
-      })
+        toast.success("Đã thêm thành công");
+      }
+      )
       .catch((error) => console.log("error", error));
+
   };
 
   const handleFind = (e) => {
-    var requestOptions = {
-      method: "GET",
-      redirect: "follow",
-    };
-
-    fetch(`http://localhost:8080/GetPatient/${e.target.value}`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => setItem(result))
+    if (submit) setSubmit(false);
+    let dataSubmit = {
+      fromDateLong: Number(moment(fromDate).startOf("day").format("x")),
+      toDateLong: Number(moment(toDate).endOf("day").format("x")),
+    }
+    axios
+      .post(`api/GetPatient`,dataSubmit)
+      .then((response) => setItem(response.data))
       .catch((error) => console.log("error", error));
+
+
+
   };
 
-  //fetch API lịch sử kiểm tra
 
   useEffect(() => {
+    // if (submit) setSubmit(false);
+    // var requestOptions = {
+    //   method: "GET",
+    // };
+    // fetch("http://localhost:8080/GetPatient", requestOptions)
+    //   .then((response) => response.json())
+    //   .then((result) => {
+    //     console.log(result);
+    //     setItem(result);
+    //   })
+    //   .catch((error) => console.log("error", error));
+
     if (submit) setSubmit(false);
-    var requestOptions = {
-      method: "GET",
-    };
-    fetch("http://localhost:8080/GetPatient", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        console.log(result);
-        setItem(result);
-      })
+    axios
+      .post(`api/GetPatient`,{})
+      .then((response) => setItem(response.data))
       .catch((error) => console.log("error", error));
+
+
   }, [submit]);
+
+  const onChangeDate = (date, dateString) => {
+    console.log(date, dateString);
+    setFromDate(dateString[0]);
+    setToDate(dateString[1]);
+   
+  }
 
   return (
     <div className="wrapper">
@@ -525,14 +582,14 @@ function Account() {
               className="noti-input"
               defaultValue={"0"}
               value={result}
-              // placeholder="Kết quả được thông báo tại đây"
+            // placeholder="Kết quả được thông báo tại đây"
             />
           </label>
         </div>
         <div className="heading-wrap">
           <span className="noti-heading">Lịch sử kiểm tra</span>
-          <div className="input-wrap">
-            <input
+          <div >
+            {/* <input
               type="text"
               placeholder="Tìm kiếm"
               id="input-search"
@@ -545,7 +602,11 @@ function Account() {
               icon={faMagnifyingGlass}
               id="search"
               onClick={handleFind}
-            />
+            /> */}
+            <Space direction="horizontal" size={12}>
+              <RangePicker onChange={onChangeDate} />
+              <Button type="primary" onClick={handleFind}>Tìm kiếm</Button>
+            </Space>
           </div>
         </div>
 
@@ -602,7 +663,7 @@ function Account() {
                       </div>
                     </td>
                     <td className="table-col">
-                      <div className="table-col-item"> {currentItem.date}</div>
+                      <div className="table-col-item"> {moment(currentItem.date).format('DD/MM/YYYY hh:mm')}</div>
                     </td>
                     <td className="table-col">
                       <Button variant="outline-primary">Xem chi tiết</Button>{" "}
