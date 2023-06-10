@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Form, Input, Button, Card } from "antd";
+import { Form, Input, Button, Card, Space } from "antd";
 import { AuthContext, useAuth } from "../../shared/AuthProvider";
 import { useNavigate } from "react-router-dom";
 
@@ -23,22 +23,30 @@ function Login() {
         <Form.Item
           label="Username"
           name="username"
-          rules={[{ required: true, message: "Please input your username!" }]}
+          rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập!" }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           label="Password"
           name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
+          rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
         >
           <Input.Password />
         </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Login
-          </Button>
-        </Form.Item>
+        <Space direction="horizontal">
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Login
+            </Button>
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" danger onClick={() => navigate("/register")}>
+              Register
+            </Button>
+          </Form.Item>
+        </Space>
+
       </Form>
     </Card>
   );

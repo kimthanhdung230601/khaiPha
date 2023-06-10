@@ -62,17 +62,18 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (username, password) => {
+    console.log("=>>> login");
     try {
       const response = await axios.post("api/public/login", {
         username,
         password,
       });
-      console.log(response.data.jwt);
+      // console.log(response.data.data.jwt);
       if(response.data != null && response.data != undefined && response.data.code == 200){
-        localStorage.setItem("token", response.data.jwt);
-        axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.jwt}`;
+        localStorage.setItem("token", response.data.data.jwt);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.data.jwt}`;
         setIsAuthenticated(true);
-        setUser(response.data);
+        setUser(response.data.data);
         navigate("/");
       }
       else {
