@@ -14,21 +14,21 @@ import { Dropdown, Space } from 'antd';
 const Header = () => {
   const { user, logout } = useAuth();
   const [name, setName] = useState("");
-  const handleFind = () => {
-    if (name != "") {
-      var requestOptions = {
-        method: "GET",
-        redirect: "follow",
-      };
+  // const handleFind = () => {
+  //   if (name != "") {
+  //     var requestOptions = {
+  //       method: "GET",
+  //       redirect: "follow",
+  //     };
 
-      fetch(`http://localhost:8080/KnnName/${name}`, requestOptions)
-        .then((response) => response.text())
-        .then((result) => console.log(result))
-        .catch((error) => console.log("error", error));
-    } else {
-      alert("vui lòng nhập tên bệnh nhân");
-    }
-  };
+  //     fetch(`http://localhost:8080/KnnName/${name}`, requestOptions)
+  //       .then((response) => response.text())
+  //       .then((result) => console.log(result))
+  //       .catch((error) => console.log("error", error));
+  //   } else {
+  //     alert("vui lòng nhập tên bệnh nhân");
+  //   }
+  // };
   const logoutfunction = () => {
     logout();
     window.location.reload();
@@ -52,7 +52,7 @@ const Header = () => {
         </Col>
         <Col style={{ padding: "0px" }}>
           <div className="header-icon">
-            <div className="input-block" id="search-block">
+            {/* <div className="input-block" id="search-block">
               <input
                 className="search"
                 placeholder="Tìm kiếm"
@@ -67,7 +67,7 @@ const Header = () => {
                 id="search"
                 onClick={handleFind}
               />
-            </div>
+            </div> */}
 
             <div className="menu">
               <FontAwesomeIcon
