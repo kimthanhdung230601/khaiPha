@@ -68,12 +68,16 @@ export function AuthProvider({ children }) {
         password,
       });
       console.log(response.data.jwt);
-
-      localStorage.setItem("token", response.data.jwt);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.jwt}`;
-      setIsAuthenticated(true);
-      setUser(response.data);
-      navigate("/");
+      if(response.data != null && response.data != undefined && response.data.code == 200){
+        localStorage.setItem("token", response.data.jwt);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.jwt}`;
+        setIsAuthenticated(true);
+        setUser(response.data);
+        navigate("/");
+      }
+      else {
+        toast.error(response.data.message);
+      }
     } catch (error) {
       console.log(error);
     }

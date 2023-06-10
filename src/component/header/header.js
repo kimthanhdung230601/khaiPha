@@ -90,7 +90,7 @@ const Header = () => {
                     <Dropdown menu={{ items }}>
                       <a onClick={(e) => e.preventDefault()}>
                         <Space>
-                        { user.fullname}
+                          Tài khoản
                           <DownOutlined />
                         </Space>
                       </a>
