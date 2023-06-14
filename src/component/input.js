@@ -1,16 +1,22 @@
 import { faCheck, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Col, Row, Table } from "react-bootstrap";
+import { Col, Row, Table, Toast } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import "./account.css";
 import axios from "axios";
 import { DatePicker, Space, Button } from 'antd';
 import moment from "moment";
-import { toast } from "react-hot-toast";
+import toast from 'react-hot-toast';
+
 const { RangePicker } = DatePicker;
 function Account() {
   //lưu kết quả chuẩn đoán
-  const [result, setResult] = useState();
+  const [result, setResult] = useState([]);
+  const [result1, setResult1] = useState();
+  const [result2, setResult2] = useState();
+  const [resultAc1, setResultAc1] = useState();
+  const [resultAc2, setResultAc2] = useState();
+  
   const [item, setItem] = useState([]);
   const [submit, setSubmit] = useState(false);
   const [fromDate, setFromDate] = useState();
@@ -60,8 +66,8 @@ function Account() {
 
     //validate input
     if (
-      values.name == "" || 
-      values.age == "" || 
+      values.name == "" ||
+      values.age == "" ||
       values.alopecia == "" ||
       values.delayedHealing == "" ||
       values.gender == "" ||
@@ -85,10 +91,18 @@ function Account() {
     axios
       .post(`api/predict`, values)
       .then((response) => {
-        const res = response.data.response;
-        setResult(res);
-        setSubmit(true);
-        toast.success("Đã thêm thành công");
+        if(response.data.code == 200) {
+          toast.success("Đã kiểm tra thành công");
+          const res = response.data.data;
+          setResult(res);
+          setSubmit(true);
+          console.log(res);
+        }
+        // const res = response.data;
+        // console.log(response.data);
+        // setResult(res.data);
+        // setSubmit(true);
+        // toast.success("Đã thêm thành công");
       }
       )
       .catch((error) => console.log("error", error));
@@ -102,7 +116,7 @@ function Account() {
       toDateLong: Number(moment(toDate).endOf("day").format("x")),
     }
     axios
-      .post(`api/GetPatient`,dataSubmit)
+      .post(`api/GetPatient`, dataSubmit)
       .then((response) => setItem(response.data))
       .catch((error) => console.log("error", error));
 
@@ -126,7 +140,7 @@ function Account() {
 
     if (submit) setSubmit(false);
     axios
-      .post(`api/GetPatient`,{})
+      .post(`api/GetPatient`, {})
       .then((response) => setItem(response.data))
       .catch((error) => console.log("error", error));
 
@@ -137,7 +151,7 @@ function Account() {
     console.log(date, dateString);
     setFromDate(dateString[0]);
     setToDate(dateString[1]);
-   
+
   }
 
   return (
@@ -576,44 +590,91 @@ function Account() {
         </div>
         <div className="noti-result">
           <div className="noti-result-name">Kết quả kiểm tra: </div>
-          <label>
-            Kết quả dự đoán thứ nhất
-            <input
-              type="text"
-              className="noti-input"
-              defaultValue={"0"}
-              value={result}
-            // placeholder="Kết quả được thông báo tại đây"
-            />
-          </label>
-          <label>
-            Kết quả dự đoán thứ hai
-            <input
-              type="text"
-              className="noti-input"
-              defaultValue={"0"}
-              value={result}
-            // placeholder="Kết quả được thông báo tại đây"
-            />
-          </label>
+          {/* <Space direction="vertical">
+            <label>
+              Kết quả dự đoán thứ nhất
+              <input
+                type="text"
+                className="noti-input"
+                defaultValue={"0"}
+                value={result1}
+              // placeholder="Kết quả được thông báo tại đây"
+              />
+            </label>
+            <label>
+              Phần trăm chính xác
+              <input
+                type="text"
+                className="noti-input"
+                defaultValue={"0"}
+                value={resultAc1}
+              // placeholder="Kết quả được thông báo tại đây"
+              />
+            </label>
+          </Space>
+          <Space direction="vertical">
+            <label>
+              Kết quả dự đoán thứ hai
+              <input
+                type="text"
+                className="noti-input"
+                defaultValue={"0"}
+                value={result2}
+              // placeholder="Kết quả được thông báo tại đây"
+              />
+            </label>
+            <label>
+              Phần trăm chính xác
+              <input
+                type="text"
+                className="noti-input"
+                defaultValue={"0"}
+                value={resultAc2}
+              // placeholder="Kết quả được thông báo tại đây"
+              />
+            </label>
+          </Space> */}
+          {result.length > 0 && result.map((item, index) => {
+            return (
+            <Space direction="vertical">
+            <label>
+              Kết quả dự đoán thứ {index+1}
+              <input
+                type="text"
+                className="noti-input"
+                defaultValue={"0"}
+                value={item.prediction}
+              // placeholder="Kết quả được thông báo tại đây"
+              />
+            </label>
+            <label>
+              Phương pháp
+              <input
+                type="text"
+                className="noti-input"
+                defaultValue={"0"}
+                value={item.phuongphap}
+              // placeholder="Kết quả được thông báo tại đây"
+              />
+            </label>
+            <label>
+              Phần trăm chính xác
+              <input
+                type="text"
+                className="noti-input"
+                defaultValue={"0"}
+                value={item.accuracy}
+              // placeholder="Kết quả được thông báo tại đây"
+              />
+            </label>
+          </Space> )
+          })}
+          
         </div>
         <div className="heading-wrap">
           <span className="noti-heading">Lịch sử kiểm tra</span>
           <div >
-            {/* <input
-              type="text"
-              placeholder="Tìm kiếm"
-              id="input-search"
-              onChange={(e) => {
-                handleFind(e);
-              }}
-            />
-            <FontAwesomeIcon
-              className="icon-search"
-              icon={faMagnifyingGlass}
-              id="search"
-              onClick={handleFind}
-            /> */}
+
             <Space direction="horizontal" size={12}>
               <RangePicker onChange={onChangeDate} />
               <Button type="primary" onClick={handleFind}>Tìm kiếm</Button>
