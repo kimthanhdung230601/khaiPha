@@ -18,7 +18,7 @@ function Login() {
   }, [isAuthenticated, navigate]);
 
   return (
-    <Card title="Login" className="m-5" style={{ backgroundColor: "rgb(244 244 244)" }}>
+    <Card title="Đăng nhập" className="m-5" style={{ backgroundColor: "rgb(244 244 244)" }}>
       <Form form={form} onFinish={handleFinish}>
         <Form.Item
           label="Username"
@@ -28,7 +28,7 @@ function Login() {
           <Input />
         </Form.Item>
         <Form.Item
-          label="Password"
+          label="Mật khẩu"
           name="password"
           rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
         >
@@ -37,12 +37,12 @@ function Login() {
         <Space direction="horizontal">
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Login
+              Đăng nhập
             </Button>
           </Form.Item>
           <Form.Item>
             <Button type="primary" danger onClick={() => navigate("/register")}>
-              Register
+              Đăng ký
             </Button>
           </Form.Item>
         </Space>

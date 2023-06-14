@@ -577,6 +577,17 @@ function Account() {
         <div className="noti-result">
           <div className="noti-result-name">Kết quả kiểm tra: </div>
           <label>
+            Kết quả dự đoán thứ nhất
+            <input
+              type="text"
+              className="noti-input"
+              defaultValue={"0"}
+              value={result}
+            // placeholder="Kết quả được thông báo tại đây"
+            />
+          </label>
+          <label>
+            Kết quả dự đoán thứ hai
             <input
               type="text"
               className="noti-input"

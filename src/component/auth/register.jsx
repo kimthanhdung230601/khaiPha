@@ -18,7 +18,7 @@ function Register() {
   }, [isAuthenticated, navigate]);
   
     return (
-      <Card title="Register" className="m-5" style={{ backgroundColor: "rgb(244 244 244)" }}>
+      <Card title="Đăng ký" className="m-5" style={{ backgroundColor: "rgb(244 244 244)" }}>
         <Form form={form} onFinish={handleFinish}>
           <Form.Item
             label="Username"
@@ -28,21 +28,21 @@ function Register() {
             <Input />
           </Form.Item>
           <Form.Item
-            label="Fullname"
+            label="Họ tên"
             name="fullname"
             rules={[{ required: true, message: "Vui lòng nhập họ tên!" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            label="Password"
+            label="Mật khẩu"
             name="password"
             rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
           >
             <Input.Password />
           </Form.Item>
           <Form.Item
-            label="Confirm Password"
+            label="Nhập lại mật khẩu"
             name="confirmPassword"
             dependencies={["password"]}
             rules={[
@@ -62,12 +62,12 @@ function Register() {
           <Space direction="horizontal">
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Register
+              Đăng ký
             </Button>
           </Form.Item>
           <Form.Item>
             <Button type="primary" danger onClick={() => navigate("/login")}>
-              Login
+              Đăng nhập
             </Button>
           </Form.Item>
         </Space>
